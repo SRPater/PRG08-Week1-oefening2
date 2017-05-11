@@ -1,38 +1,37 @@
-/// <reference path="car.ts"/>
-
 class Game {
 
-    private static instance:    Game;
-    private car:                Car;
-    private rock:               Rock;
-    public score:               number = 0;
+    private car:    Car;
+    private rock:   Rock;
     
-    private constructor() {
-        this.car    = new Car();
+    constructor() {
+        this.car    = new Car(this);
         this.rock   = new Rock();
+
         requestAnimationFrame(() => this.gameLoop());
     }
 
-    private gameLoop(): void {
+    private gameLoop() {
         this.car.move();
         this.rock.move();
+
         requestAnimationFrame(() => this.gameLoop());
     }
 
-    public endGame(): void {
-        document.getElementById("score").innerHTML = "Score : " + this.score;
+    public carCrashed(carSpeed: number) {
+        this.rock.crashed(carSpeed);
     }
 
-    public static getInstance() {
-        if (!Game.instance) {
-            Game.instance = new Game();
+    public endGame(){
+        let score = 0;
+        if (this.car.x < 335) {
+            score = Math.round(335 + this.car.x);
         }
-        return Game.instance;
+        document.getElementById("score").innerHTML = "Score : " + score;
     }
 } 
 
 
 // load
 window.addEventListener("load", function() {
-    Game.getInstance();
+    new Game();
 });

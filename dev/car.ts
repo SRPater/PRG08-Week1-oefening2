@@ -3,50 +3,61 @@
 
 class Car extends GameObject {
 
-    private speed:      number;
     private game:       Game;
-    private braking:    boolean = false;
+    private speed:      number;
+    private braking:    boolean;
+    private crashed:    boolean;
             
-    constructor() {
-        super("car", document.getElementById("container"));
+    constructor(g: Game) {
+        let container = document.getElementById("container");
+        super("car", container);
 
-        new Wheel(this, 15);
-        new Wheel(this, 105);
+        this.game = g;
+        this.x = 0;
+        this.y = 220;
 
-        this.game   = Game.getInstance();
-        this.x      = 0;
         this.speed  = Math.floor((Math.random() * 7) + 3);
+
+        let frontWheel  = new Wheel(this.div, 105);
+        let rearWheel   = new Wheel(this.div, 20);
 
         // hier een keypress event listener toevoegen. een keypress zorgt dat braking true wordt
         //
-        window.addEventListener("keydown", () => this.onKeyPress());
+        document.addEventListener("keydown", (e: KeyboardEvent) => this.handleKeyDown(e));
 
         // alvast goed zetten
 
         this.move();
     }
 
-    public getDiv(): HTMLElement {
-        return this.div;
+    private handleKeyDown(e: KeyboardEvent) {
+        if (e.key == ' ') {
+            this.braking = true;
+        }
     }
 
     public move(): void {
-        if (this.speed == 0) {
-            this.halted();
-        }
-
         // hier de snelheid verlagen als we aan het afremmen zijn
         //
         if (this.braking) {
-            this.speed = Math.floor(this.speed * 0.9);
-            console.log(this.speed);
+            this.speed *= 0.95;
+            if (this.speed < 0.05) {
+                this.speed = 0;
+            }
         }
 
         // hier kijken of de x waarde hoger is dan de x van de rots (335)
         //
-        if (this.x + Number(this.div.style.width) > 344) {
-            this.speed = 0;
-            this.game.score = 0;
+        if (this.x > 335) {
+            // Collision
+            if (!this.crashed) {
+                this.game.carCrashed(this.speed);
+                this.stop();
+            }
+            this.crashed = true;
+        }
+
+        if (this.speed == 0) {
             this.game.endGame();
         }
 
@@ -55,18 +66,10 @@ class Car extends GameObject {
         this.x += this.speed;
         
         // tekenen
-        this.div.style.transform = "translate(" + this.x + "px,220px)";
+        this.div.style.transform = "translate(" + this.x + "px," + this.y + "px)";
     }
 
-    private halted(): void {
-        this.game.score = 1000 - (345 - (this.x + Number(this.div.style.width)));
-        this.game.endGame();
-    } 
-
-    //
-    // hier een method maken voor on key press
-    //
-    private onKeyPress() {
-        this.braking = true;
+    private stop() {
+        this.speed = 0;
     }
 }

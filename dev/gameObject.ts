@@ -1,15 +1,19 @@
 class GameObject {
 
-    protected div:  HTMLElement;
-    protected x:    number;
-    protected y:    number;
+    protected _div:  HTMLElement;
+    protected _x:    number;
+    protected _y:    number;
 
-    constructor(tag: string, container: HTMLElement) {
-        this.createDiv(tag, container);
-    }
+    public get x(): number              { return this._x; }
+    public set x(value: number)         { this._x = value; }
 
-    private createDiv(tag: string, container: HTMLElement): void {
-        let parent = container;
+    public get y(): number              { return this._y; }
+    public set y(value: number)         { this._y = value; }
+
+    public get div(): HTMLElement       { return this._div; }
+    public set div(value: HTMLElement)  { this._div = value; }
+
+    constructor(tag: string, parent: HTMLElement) {
         this.div = document.createElement(tag);
         parent.appendChild(this.div);
     }

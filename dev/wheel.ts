@@ -1,10 +1,10 @@
-/// <reference path="gameObject.ts" />
+/// <reference path="gameObject.ts"/>
 
 class Wheel extends GameObject {
                         
-    constructor(car: Car, x: number) {
-        super("wheel", car.getDiv());
+    constructor(parent: HTMLElement, offsetX: number) {
+        super("wheel", parent);
 
-        this.div.style.transform = "translate(" + x + "px, 30px)";
+        this.div.style.transform ="translate(" + offsetX + "px, 30px)";
     }
 }
